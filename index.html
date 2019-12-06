@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/LimiteDistrict_0.js"></script>
+        <script src="data/gis_osm_water_a_free_1_1.js"></script>
+        <script src="data/Route_2.js"></script>
+        <script src="data/BasededonneQgis_3.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        function pop_LimiteDistrict_0(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['District'] !== null ? Autolinker.link(String(feature.properties['District'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Dist_pcode'] !== null ? Autolinker.link(String(feature.properties['Dist_pcode'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['D_code'] !== null ? Autolinker.link(String(feature.properties['D_code'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Region'] !== null ? Autolinker.link(String(feature.properties['Region'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Reg_pcode'] !== null ? Autolinker.link(String(feature.properties['Reg_pcode'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['R_code'] !== null ? Autolinker.link(String(feature.properties['R_code'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Source'] !== null ? Autolinker.link(String(feature.properties['Source'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Milieu'] !== null ? Autolinker.link(String(feature.properties['Milieu'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Code_provi'] !== null ? Autolinker.link(String(feature.properties['Code_provi'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Province'] !== null ? Autolinker.link(String(feature.properties['Province'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Population'] !== null ? Autolinker.link(String(feature.properties['Population'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nombre_de_'] !== null ? Autolinker.link(String(feature.properties['Nombre_de_'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Surface_Di'] !== null ? Autolinker.link(String(feature.properties['Surface_Di'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Densité_p'] !== null ? Autolinker.link(String(feature.properties['Densité_p'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_LimiteDistrict_0_0() {
+            return {
+                pane: 'pane_LimiteDistrict_0',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(196,60,57,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_LimiteDistrict_0');
+        map.getPane('pane_LimiteDistrict_0').style.zIndex = 400;
+        map.getPane('pane_LimiteDistrict_0').style['mix-blend-mode'] = 'normal';
+        var layer_LimiteDistrict_0 = new L.geoJson(json_LimiteDistrict_0, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_LimiteDistrict_0',
+            layerName: 'layer_LimiteDistrict_0',
+            pane: 'pane_LimiteDistrict_0',
+            onEachFeature: pop_LimiteDistrict_0,
+            style: style_LimiteDistrict_0_0,
+        });
+        bounds_group.addLayer(layer_LimiteDistrict_0);
+        map.addLayer(layer_LimiteDistrict_0);
+        function pop_gis_osm_water_a_free_1_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['osm_id'] !== null ? Autolinker.link(String(feature.properties['osm_id'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['code'] !== null ? Autolinker.link(String(feature.properties['code'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fclass'] !== null ? Autolinker.link(String(feature.properties['fclass'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['name'] !== null ? Autolinker.link(String(feature.properties['name'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_gis_osm_water_a_free_1_1_0() {
+            return {
+                pane: 'pane_gis_osm_water_a_free_1_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_gis_osm_water_a_free_1_1');
+        map.getPane('pane_gis_osm_water_a_free_1_1').style.zIndex = 401;
+        map.getPane('pane_gis_osm_water_a_free_1_1').style['mix-blend-mode'] = 'normal';
+        var layer_gis_osm_water_a_free_1_1 = new L.geoJson(json_gis_osm_water_a_free_1_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_gis_osm_water_a_free_1_1',
+            layerName: 'layer_gis_osm_water_a_free_1_1',
+            pane: 'pane_gis_osm_water_a_free_1_1',
+            onEachFeature: pop_gis_osm_water_a_free_1_1,
+            style: style_gis_osm_water_a_free_1_1_0,
+        });
+        bounds_group.addLayer(layer_gis_osm_water_a_free_1_1);
+        map.addLayer(layer_gis_osm_water_a_free_1_1);
+        function pop_Route_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['osm_id'] !== null ? Autolinker.link(String(feature.properties['osm_id'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['code'] !== null ? Autolinker.link(String(feature.properties['code'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fclass'] !== null ? Autolinker.link(String(feature.properties['fclass'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['name'] !== null ? Autolinker.link(String(feature.properties['name'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ref'] !== null ? Autolinker.link(String(feature.properties['ref'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['oneway'] !== null ? Autolinker.link(String(feature.properties['oneway'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['maxspeed'] !== null ? Autolinker.link(String(feature.properties['maxspeed'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['layer'] !== null ? Autolinker.link(String(feature.properties['layer'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['bridge'] !== null ? Autolinker.link(String(feature.properties['bridge'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['tunnel'] !== null ? Autolinker.link(String(feature.properties['tunnel'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Route_2_0() {
+            return {
+                pane: 'pane_Route_2',
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        function style_Route_2_1() {
+            return {
+                pane: 'pane_Route_2',
+                opacity: 1,
+                color: 'rgba(227,26,28,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Route_2');
+        map.getPane('pane_Route_2').style.zIndex = 402;
+        map.getPane('pane_Route_2').style['mix-blend-mode'] = 'normal';
+        var layer_Route_2 = new L.geoJson.multiStyle(json_Route_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Route_2',
+            layerName: 'layer_Route_2',
+            pane: 'pane_Route_2',
+            onEachFeature: pop_Route_2,
+            styles: [style_Route_2_0,style_Route_2_1,]
+        });
+        bounds_group.addLayer(layer_Route_2);
+        map.addLayer(layer_Route_2);
+        function pop_BasededonneQgis_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Site_ID'] !== null ? Autolinker.link(String(feature.properties['Site_ID'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Site_ID2'] !== null ? Autolinker.link(String(feature.properties['Site_ID2'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Site_Name'] !== null ? Autolinker.link(String(feature.properties['Site_Name'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>CodeName</strong><br />' + (feature.properties['CodeName'] !== null ? Autolinker.link(String(feature.properties['CodeName'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Longitude'] !== null ? Autolinker.link(String(feature.properties['Longitude'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Latitude'] !== null ? Autolinker.link(String(feature.properties['Latitude'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fokontany'] !== null ? Autolinker.link(String(feature.properties['Fokontany'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Commune'] !== null ? Autolinker.link(String(feature.properties['Commune'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['District'] !== null ? Autolinker.link(String(feature.properties['District'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['R�gion'] !== null ? Autolinker.link(String(feature.properties['R�gion'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Urbain_Rural'] !== null ? Autolinker.link(String(feature.properties['Urbain_Rural'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['MAN_FTTX'] !== null ? Autolinker.link(String(feature.properties['MAN_FTTX'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYPO_NRJ'] !== null ? Autolinker.link(String(feature.properties['TYPO_NRJ'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ON_GRID___OFF_GRID'] !== null ? Autolinker.link(String(feature.properties['ON_GRID___OFF_GRID'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Zone_JIRAMA'] !== null ? Autolinker.link(String(feature.properties['Zone_JIRAMA'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Zone_de_Vent'] !== null ? Autolinker.link(String(feature.properties['Zone_de_Vent'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Zone_de_Vent_2'] !== null ? Autolinker.link(String(feature.properties['Zone_de_Vent_2'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Type_d_infra'] !== null ? Autolinker.link(String(feature.properties['Type_d_infra'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Infra_x3'] !== null ? Autolinker.link(String(feature.properties['Infra_x3'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tom_Twin'] !== null ? Autolinker.link(String(feature.properties['Tom_Twin'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Hauteur__m_'] !== null ? Autolinker.link(String(feature.properties['Hauteur__m_'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Type_Transmission'] !== null ? Autolinker.link(String(feature.properties['Type_Transmission'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PHASE'] !== null ? Autolinker.link(String(feature.properties['PHASE'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TOM_TWIN_PICOM_FORFAIT'] !== null ? Autolinker.link(String(feature.properties['TOM_TWIN_PICOM_FORFAIT'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['date_RFI___rachat_ou_KICKOFF'] !== null ? Autolinker.link(String(feature.properties['date_RFI___rachat_ou_KICKOFF'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RFI_DOP'] !== null ? Autolinker.link(String(feature.properties['RFI_DOP'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Statut_1'] !== null ? Autolinker.link(String(feature.properties['Statut_1'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BASE_X3_Finance'] !== null ? Autolinker.link(String(feature.properties['BASE_X3_Finance'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RFI_Pr�visionnelle_2016'] !== null ? Autolinker.link(String(feature.properties['RFI_Pr�visionnelle_2016'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['_48___40_sites'] !== null ? Autolinker.link(String(feature.properties['_48___40_sites'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TELMAFIXE'] !== null ? Autolinker.link(String(feature.properties['TELMAFIXE'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TGN'] !== null ? Autolinker.link(String(feature.properties['TGN'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TELMA_MOBILE_2G_net'] !== null ? Autolinker.link(String(feature.properties['TELMA_MOBILE_2G_net'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['_2G_TMM__base_TMM_'] !== null ? Autolinker.link(String(feature.properties['_2G_TMM__base_TMM_'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TELMA_MOBILE_3G_net'] !== null ? Autolinker.link(String(feature.properties['TELMA_MOBILE_3G_net'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TELMA_MOBILE_LTE_net'] !== null ? Autolinker.link(String(feature.properties['TELMA_MOBILE_LTE_net'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OMA'] !== null ? Autolinker.link(String(feature.properties['OMA'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Date_RFI_OMA'] !== null ? Autolinker.link(String(feature.properties['Date_RFI_OMA'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AIRTEL'] !== null ? Autolinker.link(String(feature.properties['AIRTEL'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Date_RFI_ATL'] !== null ? Autolinker.link(String(feature.properties['Date_RFI_ATL'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nombre'] !== null ? Autolinker.link(String(feature.properties['Nombre'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GULFSAT'] !== null ? Autolinker.link(String(feature.properties['GULFSAT'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RVS'] !== null ? Autolinker.link(String(feature.properties['RVS'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RTA'] !== null ? Autolinker.link(String(feature.properties['RTA'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BORAHA'] !== null ? Autolinker.link(String(feature.properties['BORAHA'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Radio_MARIA'] !== null ? Autolinker.link(String(feature.properties['Radio_MARIA'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Observation'] !== null ? Autolinker.link(String(feature.properties['Observation'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nombre_Totale'] !== null ? Autolinker.link(String(feature.properties['Nombre_Totale'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_49'] !== null ? Autolinker.link(String(feature.properties['field_49'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_50'] !== null ? Autolinker.link(String(feature.properties['field_50'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_51'] !== null ? Autolinker.link(String(feature.properties['field_51'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['field_52'] !== null ? Autolinker.link(String(feature.properties['field_52'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_BasededonneQgis_3_0() {
+            return {
+                pane: 'pane_BasededonneQgis_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_BasededonneQgis_3');
+        map.getPane('pane_BasededonneQgis_3').style.zIndex = 403;
+        map.getPane('pane_BasededonneQgis_3').style['mix-blend-mode'] = 'normal';
+        var layer_BasededonneQgis_3 = new L.geoJson(json_BasededonneQgis_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BasededonneQgis_3',
+            layerName: 'layer_BasededonneQgis_3',
+            pane: 'pane_BasededonneQgis_3',
+            onEachFeature: pop_BasededonneQgis_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_BasededonneQgis_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_BasededonneQgis_3);
+        map.addLayer(layer_BasededonneQgis_3);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/BasededonneQgis_3.png" /> Base de donnéeQgis': layer_BasededonneQgis_3,'<img src="legend/Route_2.png" /> Route': layer_Route_2,'<img src="legend/gis_osm_water_a_free_1_1.png" /> gis_osm_water_a_free_1': layer_gis_osm_water_a_free_1_1,'<img src="legend/LimiteDistrict_0.png" /> LimiteDistrict': layer_LimiteDistrict_0,}).addTo(map);
+        setBounds();
+        var i = 0;
+        layer_LimiteDistrict_0.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['District'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['District']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_LimiteDistrict_0'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_BasededonneQgis_3.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['CodeName'] !== null?String('<div style="color: #000000; font-size: 7pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['CodeName']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BasededonneQgis_3'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        map.addControl(new L.Control.Search({
+            layer: layer_BasededonneQgis_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'CodeName'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        resetLabels([layer_LimiteDistrict_0,layer_BasededonneQgis_3]);
+        map.on("zoomend", function(){
+            resetLabels([layer_LimiteDistrict_0,layer_BasededonneQgis_3]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_LimiteDistrict_0,layer_BasededonneQgis_3]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_LimiteDistrict_0,layer_BasededonneQgis_3]);
+        });
+        </script>
+    </body>
+</html>
